@@ -1,4 +1,20 @@
-!DOCTYPE html>
+<!DOCTYPE html>
+<!--
+  PRESEPE.EXE · VR — di Nicola Lombardi
+  Un solo file: caricalo nella radice del repository GitHub e attiva Pages.
+ 
+  PUBBLICARE SU GITHUB PAGES
+    1. Crea un repository pubblico e carica questo index.html (Add file > Upload files).
+    2. Settings > Pages > Deploy from a branch > main / root > Save.
+    3. Dopo circa un minuto apri https://TUO-UTENTE.github.io/NOME-REPO/ dal browser del visore e premi l'icona VR.
+ 
+  MODELLI 3D REALI (facoltativi) DA SKETCHFAB / FAB
+    Scarica i modelli in formato .glb e mettili in una cartella "models/" accanto a questo file.
+    Nomi attesi: stable, mary, joseph, baby, shepherd1, shepherd2, shepherd-boy, king1, king2, king3,
+    ox, donkey, sheep, camel, angel (tutti .glb). Quelli mancanti vengono ignorati e resta la versione da codice.
+    Direzione sbagliata: nel suo slot="..." aggiungi ;ry:90 (o 180, -90). Dimensione: cambia h (metri).
+    Licenze CC: scrivi titolo, autore e licenza in MODEL_CREDITS qui sotto nello script.
+-->
 <html lang="it">
 <head>
 <meta charset="utf-8">
@@ -20,6 +36,16 @@
   .intro button{font:600 1rem "JetBrains Mono",monospace;padding:.95em 2.2em;border-radius:10px;border:1px solid var(--ciano);background:rgba(77,232,255,.1);color:var(--ciano);cursor:pointer;transition:background .25s,box-shadow .25s}
   .intro button:hover,.intro button:focus-visible{background:rgba(77,232,255,.25);box-shadow:0 0 28px rgba(77,232,255,.45);outline:none}
   .hint{position:fixed;left:16px;bottom:16px;z-index:5;font:400 .75rem/1.5 "JetBrains Mono",monospace;color:rgba(232,249,255,.65);max-width:36ch;pointer-events:none}
+  #credits{position:fixed;right:16px;bottom:16px;z-index:5;max-width:44ch;text-align:right;font:400 .7rem/1.5 "JetBrains Mono",monospace;color:rgba(232,249,255,.55);pointer-events:none}
+  .intro .ghost{margin-left:.7rem;border-color:rgba(232,249,255,.35);color:rgba(232,249,255,.8);background:transparent}
+  #guida{position:fixed;inset:0;z-index:30;display:none;place-items:center;padding:20px;background:rgba(5,6,15,.88);backdrop-filter:blur(10px)}
+  #guida.open{display:grid}
+  #guida .box{max-width:640px;max-height:86vh;overflow:auto;padding:26px 28px;border:1px solid rgba(77,232,255,.35);border-radius:14px;background:#070a1a;color:#e8f9ff;font:400 .92rem/1.6 "Space Grotesk",system-ui,sans-serif}
+  #guida h2{margin:0 0 .6em;font:700 1.5rem "Space Grotesk",sans-serif;color:var(--oro)}
+  #guida h3{margin:1.3em 0 .4em;font:600 1rem "JetBrains Mono",monospace;color:var(--ciano)}
+  #guida code{font:400 .82rem "JetBrains Mono",monospace;color:var(--oro)}
+  #guida table{border-collapse:collapse;width:100%;font-size:.85rem}#guida td{padding:4px 8px;border-bottom:1px solid rgba(255,255,255,.1)}
+  #guida button{margin-top:1.4rem;font:600 .95rem "JetBrains Mono",monospace;padding:.7em 1.6em;border-radius:10px;border:1px solid var(--ciano);background:rgba(77,232,255,.1);color:var(--ciano);cursor:pointer}
   @keyframes blink{50%{opacity:0}}
   @media (prefers-reduced-motion:reduce){.intro{transition:none}.intro code::after{animation:none}}
 </style>
@@ -43,6 +69,8 @@ const blob=r=>{const cv=document.createElement('canvas');cv.width=cv.height=64;c
 const lathe=(pts,h,seg,ps,pl,fold)=>{const g=new T.LatheGeometry(pts.map(p=>new T.Vector2(p[0]*h,p[1]*h)),seg,ps,pl),P=g.attributes.position;
   for(let i=0;i<P.count;i++){const x=P.getX(i),y=P.getY(i)/h,z=P.getZ(i),k=1+fold*Math.sin(Math.atan2(x,z)*9+y*6)*Math.min(1,(.95-y)*2.2);P.setX(i,x*k);P.setZ(i,z*k)}
   g.computeVertexNormals();return g};
+ 
+const sh=g=>g.traverse(c=>{if(c.isMesh&&!c.material.isMeshBasicMaterial){c.castShadow=true;c.receiveShadow=true}});
  
 /* ---------- Persona realistica (panneggi, volto, mani, accessori) ---------- */
 const POSE={rest:[.06,-.25,.06,-.25,0],pray:[-.35,-1.5,-.35,-1.5,.5],hold:[-.7,-1,-.7,-1,.3],staff:[-.55,-.5,.06,-.25,0],cradle:[-.55,-1,-.55,-1,.35]};
@@ -91,7 +119,7 @@ init(){
     g.add(M(new T.TorusGeometry(.05*h,.011*h,8,16,Math.PI),std('#6b4a2b',{roughness:.9}),.1*h,1.15*h,.22*h))}
   if(d.gift){g.add(M(new T.BoxGeometry(.09*h,.05*h,.065*h),gold(),0,.655*h,.27*h));g.add(M(new T.BoxGeometry(.095*h,.018*h,.07*h),gold(),0,.69*h,.27*h));
     g.add(M(new T.SphereGeometry(.011*h,10,8),std('#c8102e',{roughness:.2,emissive:'#80001a',emissiveIntensity:.5}),0,.705*h,.27*h))}
-  this.el.setObject3D('m',g);
+  (sh(g),this.el.setObject3D('m',g));
 },
 tick(t){const k=t/1000+this.ph;this.hd.rotation.set(this.tilt+Math.sin(k*.9)*.03,Math.sin(k*.6)*.14,0);this.g.scale.y=1+.005*Math.sin(k*1.6);
   if(this.halo)this.halo.scale.setScalar(1+.06*Math.sin(k*2.4))}});
@@ -114,7 +142,7 @@ AFRAME.registerComponent('animal',{schema:{kind:{default:'ox'}},init(){
       const hn=M(new T.ConeGeometry(.025*s,.22*s,8),std('#efe6cf',{roughness:.5}),x*.15*s,.2*s,.02*s);hn.rotation.z=-x*.9;hh.add(hn)}
     else{const e=M(new T.CapsuleGeometry(.035*s,.2*s,4,8),hide,x*.07*s,.27*s,-.02*s);e.rotation.z=-x*.25;hh.add(e)}}
   const tl=new T.Group();tl.position.set(0,.88*s,-.62*s);tl.add(M(new T.CapsuleGeometry(.015*s,.32*s,4,6),hide,0,-.2*s,0));tl.add(M(new T.SphereGeometry(.04*s,8,6),dk,0,-.4*s,0));g.add(tl);this.tl=tl;
-  g.add(M(new T.SphereGeometry(.001),dk));this.ph=Math.random()*9;this.el.setObject3D('m',g);
+  g.add(M(new T.SphereGeometry(.001),dk));this.ph=Math.random()*9;(sh(g),this.el.setObject3D('m',g));
 },tick(t){const k=t/1000+this.ph;this.nk.rotation.x=Math.sin(k*.6)*.12;this.tl.rotation.z=Math.sin(k*2)*.25;this.b.scale.set(1,1+.01*Math.sin(k*1.5),1)}});
  
 /* ---------- Pecora con lana ---------- */
@@ -125,7 +153,7 @@ AFRAME.registerComponent('sheep',{init(){
   hd.add(M(new T.SphereGeometry(.075,14,10),dk,0,0,.04,[.8,.95,1.3]));
   for(const x of [-1,1]){const e=M(new T.CapsuleGeometry(.018,.05,4,6),dk,x*.075,.02,0);e.rotation.z=-x*1.2;hd.add(e);hd.add(M(new T.SphereGeometry(.012,8,6),std('#eadfc2'),x*.05,.03,.08))}
   for(const [x,z] of [[-1,1],[1,1],[-1,-1],[1,-1]])g.add(M(new T.CapsuleGeometry(.018,.2,4,6),dk,x*.09,.13,z*.17));
-  this.ph=Math.random()*9;this.el.setObject3D('m',g);
+  this.ph=Math.random()*9;(sh(g),this.el.setObject3D('m',g));
 },tick(t){const k=t/1000+this.ph,gr=Math.max(0,Math.sin(k*.5));this.hd.rotation.x=.1+gr*.9;this.hd.position.y=.42-gr*.2}});
  
 /* ---------- Gesù Bambino ---------- */
@@ -134,7 +162,7 @@ AFRAME.registerComponent('baby',{init(){
   for(const x of [-.03,.05]){const r=M(new T.TorusGeometry(.058,.007,6,16),std('#d9c8a3'),x,0,0);r.rotation.y=Math.PI/2;g.add(r)}
   const sk=std('#f0c7a0',{roughness:.5});g.add(M(new T.SphereGeometry(.05,16,12),sk,-.15,.005,0));
   for(const z of [-1,1])g.add(M(new T.BoxGeometry(.014,.003,.004),std('#5a3a2a'),-.15,.048,z*.02));
-  g.add(M(new T.SphereGeometry(.007,6,6),sk,-.15,.05,0));this.g=g;this.el.setObject3D('m',g);
+  g.add(M(new T.SphereGeometry(.007,6,6),sk,-.15,.05,0));this.g=g;(sh(g),this.el.setObject3D('m',g));
 },tick(t){this.g.scale.y=1+.03*Math.sin(t/700)}});
  
 /* ---------- Pellegrini: i Magi camminano, si fermano, tornano ---------- */
@@ -146,6 +174,53 @@ tick(t,dt){const d=this.data,o=this.el.object3D,c=this.el.firstElementChild&&thi
   const tg=this.base+(walk&&this.dir<0?Math.PI:0),df=((tg-this.yaw+Math.PI)%6.283+6.283)%6.283-Math.PI;this.yaw+=df*Math.min(1,dt*.004);
   o.position.set(d.from.x+(d.to.x-d.from.x)*this.u,0,d.from.z+(d.to.z-d.from.z)*this.u);o.rotation.y=this.yaw;
   if(c)c.position.y=walk?Math.abs(Math.sin(t/190))*.03:0}});
+ 
+/* ---------- Slot per modelli 3D (Sketchfab/Fab, formato .glb): se il file c'e' sostituisce la versione procedurale ---------- */
+const MODEL_CREDITS={
+  /* Compila per ogni modello scaricato (obbligatorio con licenza CC BY), per esempio:
+  'mary.glb':'Titolo del modello, di NomeAutore (CC BY 4.0), sketchfab.com/...' */
+};
+const usati=new Set();
+function mostraCrediti(f){const nome=f.split('/').pop();if(usati.has(nome))return;usati.add(nome);
+  const t=[...usati].map(n=>MODEL_CREDITS[n]||n).join('\n');
+  document.getElementById('credits').innerText='Modelli 3D:\n'+t;
+  const v=document.getElementById('creditsvr');if(v)v.setAttribute('text','value',t)}
+AFRAME.registerComponent('slot',{schema:{src:{type:'string'},h:{default:1.7},ry:{default:0},hide:{type:'string'}},init(){
+  const d=this.data,el=this.el;
+  new T.GLTFLoader().load(d.src,gl=>{
+    const m=gl.scene,b=new T.Box3().setFromObject(m),sz=b.getSize(new T.Vector3()),c=b.getCenter(new T.Vector3()),k=d.h/(sz.y||1);
+    m.scale.setScalar(k);m.position.set(-c.x*k,-b.min.y*k,-c.z*k);
+    m.traverse(o=>{if(o.isMesh){o.castShadow=o.receiveShadow=true;const mt=o.material;if(mt&&mt.map){mt.map.anisotropy=8}if(mt&&'envMapIntensity' in mt)mt.envMapIntensity=.6}});
+    const g=new T.Group();g.rotation.y=d.ry*Math.PI/180;g.add(m);el.setObject3D('glb',g);
+    const p=el.getObject3D('m');if(p)p.visible=false;
+    if(d.hide)document.querySelectorAll(d.hide).forEach(e=>e.object3D.visible=false);
+    if(gl.animations&&gl.animations.length){this.mx=new T.AnimationMixer(m);gl.animations.forEach(a=>this.mx.clipAction(a).play())}
+    mostraCrediti(d.src);
+  },undefined,()=>{/* file assente: resta la versione procedurale */});
+},tick(t,dt){if(this.mx)this.mx.update(dt/1000)}});
+ 
+/* ---------- Paesaggio: terra, sassi, ulivi ---------- */
+AFRAME.registerComponent('landscape',{init(){
+  const g=new T.Group();let s=3;const r=()=>(s=(s*16807)%2147483647)/2147483647;
+  const cv=document.createElement('canvas');cv.width=cv.height=128;const x=cv.getContext('2d'),gr=x.createRadialGradient(64,64,10,64,64,64);
+  gr.addColorStop(0,'rgba(78,60,38,1)');gr.addColorStop(.7,'rgba(58,46,30,.9)');gr.addColorStop(1,'rgba(40,32,22,0)');x.fillStyle=gr;x.fillRect(0,0,128,128);
+  const e=new T.Mesh(new T.CircleGeometry(11,48),new T.MeshStandardMaterial({map:new T.CanvasTexture(cv),transparent:true,roughness:1,depthWrite:false}));
+  e.rotation.x=-Math.PI/2;e.position.set(0,.02,-2);e.receiveShadow=true;g.add(e);
+  const rock=std('#5a5a66',{roughness:1,flatShading:true});
+  for(let i=0;i<70;i++){const a=r()*6.283,d=4+r()*9,k=.06+r()*.22,m=M(new T.DodecahedronGeometry(k,0),rock,Math.cos(a)*d,k*.4,Math.sin(a)*d-2,[1,.6+r()*.4,1]);m.rotation.set(r()*3,r()*3,0);m.castShadow=m.receiveShadow=true;g.add(m)}
+  const bark=std('#3a2c20',{roughness:1}),leaf=std('#6f8a68',{roughness:.9,emissive:'#1a2a1a',emissiveIntensity:.3,flatShading:true});
+  for(let i=0;i<9;i++){const a=2.2+r()*5.4,d=12+r()*8,t=new T.Group();t.position.set(Math.cos(a)*d,0,Math.sin(a)*d-3);
+    const tr=M(new T.CylinderGeometry(.15,.28,2.2,7),bark,0,1.1,0);tr.rotation.z=(r()-.5)*.3;t.add(tr);
+    for(let j=0;j<6;j++)t.add(M(new T.IcosahedronGeometry(.8+r()*.7,1),leaf,(r()-.5)*2.2,2.4+r()*.9,(r()-.5)*2.2,[1.3,.6,1.3]));
+    t.traverse(o=>{if(o.isMesh)o.castShadow=true});g.add(t)}
+  this.el.setObject3D('m',g)}});
+ 
+/* ---------- Frasi che girano attorno alla stella ---------- */
+AFRAME.registerComponent('orbit-text',{init(){
+  const L=[['Buon Natale da Nicola Lombardi','#ffd27a',6],['autore = "Nicola Lombardi";','#4de8ff',5],['git commit -m "Natale"','#4de8ff',4],['while (true) love++;','#ffd27a',4],
+    ['if (star) follow();','#4de8ff',4],['Nicola Lombardi @ Betlemme','#ffd27a',5],['return peace;','#4de8ff',4],['sudo give --gifts','#ffd27a',4]];
+  L.forEach(([v,c,w],i)=>{const a=i/L.length*6.283,e=mk(this.el,'a-entity',{position:`${Math.sin(a)*6.2} ${Math.sin(i*1.7)*.5} ${Math.cos(a)*6.2}`,'look-at':'[camera]'});
+    e.setAttribute('text',{value:v,font:'monoid',color:c,align:'center',width:w})})}});
  
 /* ---------- Stelle, code rain, skyline, stelle cadenti, terminale, luci, stick ---------- */
 AFRAME.registerComponent('starfield',{init(){
@@ -195,34 +270,63 @@ tick(t,dt){if(this.in.length()<.15)return;const c=this.el.querySelector('[camera
   c.object3D.getWorldQuaternion(this.q);const yaw=new T.Euler().setFromQuaternion(this.q,'YXZ').y,s=2.2*dt/1000,p=this.el.object3D.position;
   p.x+=(this.in.x*Math.cos(yaw)+this.in.y*Math.sin(yaw))*s;p.z+=(-this.in.x*Math.sin(yaw)+this.in.y*Math.cos(yaw))*s}});
  
-window.addEventListener('DOMContentLoaded',()=>document.getElementById('start').addEventListener('click',()=>document.getElementById('intro').classList.add('hide')));
+window.addEventListener('DOMContentLoaded',()=>{
+  const $=i=>document.getElementById(i);
+  $('start').addEventListener('click',()=>$('intro').classList.add('hide'));
+  $('apriguida').addEventListener('click',()=>$('guida').classList.add('open'));
+  $('chiudiguida').addEventListener('click',()=>$('guida').classList.remove('open'));
+});
 </script>
 </head>
 <body>
 <div class="intro" id="intro"><div>
-  <code>$ ./presepe --vr</code>
+  <code>$ ./presepe --autore="Nicola Lombardi"</code>
   <h1>Presepe.exe</h1>
-  <p>Una notte a Betlemme, scritta in codice. Entra con il visore o dal browser.</p>
-  <button id="start">avvia()</button>
+  <p>Una notte a Betlemme, scritta in codice da Nicola Lombardi. Entra con il visore o dal browser.</p>
+  <button id="start">avvia()</button><button id="apriguida" class="ghost">guida</button>
 </div></div>
 <div class="hint">Visore: icona VR in basso a destra, muoviti con lo stick.<br>Computer: WASD e mouse.</div>
  
-<a-scene renderer="antialias:true"
+<div id="credits"></div>
+<div id="guida"><div class="box">
+  <h2>Guida</h2>
+  <h3>Pubblicare su GitHub Pages</h3>
+  <p>1. Crea un repository pubblico e carica questo <code>index.html</code> (Add file → Upload files).<br>
+     2. Vai in Settings → Pages → Deploy from a branch → <code>main</code> / root → Save.<br>
+     3. Dopo circa un minuto apri <code>https://TUO-UTENTE.github.io/NOME-REPO/</code> dal browser del visore e premi l’icona VR.</p>
+  <h3>Modelli 3D da Sketchfab / Fab</h3>
+  <p>Scarica i modelli in formato <code>.glb</code> e mettili in una cartella <code>models/</code> accanto a <code>index.html</code>. Quelli mancanti vengono ignorati e resta la versione costruita da codice.</p>
+  <table>
+    <tr><td><code>stable.glb</code></td><td>capanna o grotta</td></tr>
+    <tr><td><code>mary.glb</code> · <code>joseph.glb</code> · <code>baby.glb</code></td><td>Sacra Famiglia</td></tr>
+    <tr><td><code>shepherd1.glb</code> · <code>shepherd2.glb</code> · <code>shepherd-boy.glb</code></td><td>pastori</td></tr>
+    <tr><td><code>king1.glb</code> · <code>king2.glb</code> · <code>king3.glb</code></td><td>Re Magi</td></tr>
+    <tr><td><code>ox.glb</code> · <code>donkey.glb</code> · <code>sheep.glb</code></td><td>animali</td></tr>
+    <tr><td><code>camel.glb</code> · <code>angel.glb</code></td><td>facoltativi</td></tr>
+  </table>
+  <h3>Regolazioni</h3>
+  <p>Modello girato nel verso sbagliato: nel suo <code>slot="…"</code> aggiungi <code>;ry:90</code> (o <code>180</code>, <code>-90</code>). Troppo grande o piccolo: cambia <code>h</code> (altezza in metri).</p>
+  <h3>Licenze</h3>
+  <p>I modelli Creative Commons richiedono di citare l’autore: scrivi titolo, autore e licenza in <code>MODEL_CREDITS</code> nello script. I crediti compaiono nella pagina e sul pavimento in VR. Alcune licenze escludono uso commerciale o modifiche.</p>
+  <button id="chiudiguida">chiudi</button>
+</div></div>
+<a-scene renderer="antialias:true" shadow="type:pcfsoft"
   fog="type:exponential;color:#05060f;density:.008" background="color:#05060f">
  
   <!-- Mondo digitale -->
   <a-entity id="world">
     <a-entity starfield shooter></a-entity>
-    <a-circle radius="130" rotation="-90 0 0" color="#070b1a" material="roughness:1"></a-circle>
+    <a-circle radius="130" rotation="-90 0 0" color="#0a1020" material="roughness:1" shadow="receive:true"></a-circle>
     <a-entity skyline></a-entity>
     <a-entity id="grid"></a-entity>
   </a-entity>
  
   <a-entity id="amb" light="type:ambient;color:#5a6cff;intensity:.55"></a-entity>
-  <a-entity light="type:directional;color:#9fb4ff;intensity:.6" position="-20 30 -10"></a-entity>
+  <a-entity light="type:directional;color:#a9bcff;intensity:.95;castShadow:true;shadowMapWidth:2048;shadowMapHeight:2048;shadowCameraLeft:-14;shadowCameraRight:14;shadowCameraTop:14;shadowCameraBottom:-14;shadowCameraNear:1;shadowCameraFar:50;shadowBias:-.0005;target:#stable" position="-7 14 6"></a-entity>
  
   <!-- Presepe -->
   <a-entity id="presepe">
+    <a-entity landscape></a-entity>
     <a-entity coderain="char:0;color:#4de8ff"></a-entity>
     <a-entity coderain="char:1;color:#ffd27a;count:120"></a-entity>
  
@@ -232,7 +336,8 @@ window.addEventListener('DOMContentLoaded',()=>document.getElementById('start').
       animation__s="property:scale;from:1 1 1;to:18 18 18;dur:6000;delay:3000;loop:true;easing:easeOutQuad" animation__o="property:material.opacity;from:.9;to:0;dur:6000;delay:3000;loop:true;easing:linear"></a-torus>
  
     <!-- Capanna -->
-    <a-entity position="0 0 -3.2">
+    <a-entity id="stable" position="0 0 -3.2">
+      <a-entity id="shell">
       <a-box width="3.8" height=".1" depth="2.6" position="0 .05 0" color="#2a2210" material="emissive:#ffb300;emissiveIntensity:.18"></a-box>
       <a-box width="4.4" height="2.8" depth=".1" position="0 1.4 -1.4" material="color:#0b1226;emissive:#ffd27a;emissiveIntensity:.08;transparent:true;opacity:.75"></a-box>
       <a-box width=".12" height="2.7" depth=".12" position="-2 1.35 1.2" material="color:#ffd27a;emissive:#ffb300;emissiveIntensity:.8"></a-box>
@@ -241,41 +346,48 @@ window.addEventListener('DOMContentLoaded',()=>document.getElementById('start').
       <a-box width=".12" height="2.7" depth=".12" position="2 1.35 -1.2" material="color:#ffd27a;emissive:#ffb300;emissiveIntensity:.8"></a-box>
       <a-box width="2.7" height=".08" depth="3.1" position="-1.1 2.95 0" rotation="0 0 25" material="color:#ffd27a;emissive:#ffb300;emissiveIntensity:.35;transparent:true;opacity:.4"></a-box>
       <a-box width="2.7" height=".08" depth="3.1" position="1.1 2.95 0" rotation="0 0 -25" material="color:#ffd27a;emissive:#ffb300;emissiveIntensity:.35;transparent:true;opacity:.4"></a-box>
+      </a-entity>
       <a-box width=".95" height=".32" depth=".5" position="0 .26 .2" color="#8a6038" material="roughness:.9;emissive:#8a6038;emissiveIntensity:.2"></a-box>
       <a-box width=".82" height=".08" depth=".4" position="0 .4 .2" color="#e0b84f" material="roughness:1;emissive:#e0b84f;emissiveIntensity:.35"></a-box>
-      <a-entity baby position="0 .5 .2"></a-entity>
+      <a-entity baby position="0 .5 .2" slot="src:models/baby.glb;h:.16"></a-entity>
       <a-sphere radius=".3" position="0 .5 .2" material="shader:flat;color:#ffd27a;transparent:true;opacity:.22" animation="property:scale;from:1 1 1;to:1.8 1.8 1.8;dir:alternate;loop:true;dur:700;easing:easeInOutQuad"></a-sphere>
       <a-entity light="type:point;color:#ffb45e;intensity:1.5;distance:10;decay:1.5" position="0 1.7 .3" flicker="base:1.5;amp:.3"></a-entity>
       <a-entity light="type:point;color:#ffe3a8;intensity:.9;distance:3;decay:1.5" position="0 .9 .5"></a-entity>
     </a-entity>
  
+    <a-entity slot="src:models/stable.glb;h:3.4;hide:#shell" position="0 0 -3.2"></a-entity>
+    <a-entity slot="src:models/angel.glb;h:2.2" position="0 3.6 -4.8"></a-entity>
+ 
     <!-- Sacra Famiglia e animali -->
-    <a-entity person="robe:#2f5fc0;head:veil;hc:#efe6d2;halo:true;h:1.55;pose:cradle;tilt:.35;skin:#e8c19c" position="-.85 0 -2.7" rotation="0 105 0"></a-entity>
-    <a-entity person="robe:#a8743a;mantle:#5b4630;hair:#6b4a2a;beard:true;halo:true;h:1.72;pose:pray;tilt:.2" position=".95 0 -2.8" rotation="0 -100 0"></a-entity>
-    <a-entity animal="kind:ox" position="-1.6 0 -3.8" rotation="0 63 0"></a-entity>
-    <a-entity animal="kind:donkey" position="1.6 0 -3.9" rotation="0 -60 0"></a-entity>
+    <a-entity person="robe:#2f5fc0;head:veil;hc:#efe6d2;halo:true;h:1.55;pose:cradle;tilt:.35;skin:#e8c19c" position="-.85 0 -2.7" rotation="0 105 0" slot="src:models/mary.glb;h:1.55"></a-entity>
+    <a-entity person="robe:#a8743a;mantle:#5b4630;hair:#6b4a2a;beard:true;halo:true;h:1.72;pose:pray;tilt:.2" position=".95 0 -2.8" rotation="0 -100 0" slot="src:models/joseph.glb;h:1.72"></a-entity>
+    <a-entity animal="kind:ox" position="-1.6 0 -3.8" rotation="0 63 0" slot="src:models/ox.glb;h:1.5"></a-entity>
+    <a-entity animal="kind:donkey" position="1.6 0 -3.9" rotation="0 -60 0" slot="src:models/donkey.glb;h:1.35"></a-entity>
  
     <!-- Pastori, falò e pecore -->
-    <a-entity person="robe:#7d8a5c;mantle:#5a4632;head:hood;hair:#4a3a2a;beard:true;h:1.7;pose:staff;staff:true;skin:#d9a876" position="-3.2 0 -1.2" rotation="0 119 0"></a-entity>
-    <a-entity person="robe:#8a6a5a;mantle:#4a3a2c;head:hood;hair:#9a9a9a;beard:true;h:1.62;pose:staff;staff:true;tilt:.1" position="-4.4 0 -2.1" rotation="0 101 0"></a-entity>
-    <a-entity person="robe:#6b7a8a;head:hood;h:1.25;pose:pray;skin:#e0b08a" position="-3.7 0 -2.4" rotation="0 99 0"></a-entity>
+    <a-entity person="robe:#7d8a5c;mantle:#5a4632;head:hood;hair:#4a3a2a;beard:true;h:1.7;pose:staff;staff:true;skin:#d9a876" position="-3.2 0 -1.2" rotation="0 119 0" slot="src:models/shepherd1.glb;h:1.7"></a-entity>
+    <a-entity person="robe:#8a6a5a;mantle:#4a3a2c;head:hood;hair:#9a9a9a;beard:true;h:1.62;pose:staff;staff:true;tilt:.1" position="-4.4 0 -2.1" rotation="0 101 0" slot="src:models/shepherd2.glb;h:1.62"></a-entity>
+    <a-entity person="robe:#6b7a8a;head:hood;h:1.25;pose:pray;skin:#e0b08a" position="-3.7 0 -2.4" rotation="0 99 0" slot="src:models/shepherd-boy.glb;h:1.25"></a-entity>
     <a-entity position="-4 0 -.2">
       <a-cone radius-bottom=".22" radius-top=".01" height=".6" segments-radial="6" position="0 .3 0" material="shader:flat;color:#ff8a1f" animation="property:scale;from:1 1 1;to:.8 1.3 .8;dir:alternate;loop:true;dur:260;easing:easeInOutSine"></a-cone>
       <a-cone radius-bottom=".12" radius-top=".01" height=".4" segments-radial="6" position="0 .2 0" material="shader:flat;color:#ffe08a" animation="property:scale;from:1 1 1;to:.85 1.35 .85;dir:alternate;loop:true;dur:190;easing:easeInOutSine"></a-cone>
       <a-entity light="type:point;color:#ff9a3c;intensity:1.6;distance:9;decay:1.4" position="0 .8 0" flicker="base:1.5;amp:.8"></a-entity>
     </a-entity>
-    <a-entity sheep position="-2.6 0 -.2" rotation="0 40 0"></a-entity>
-    <a-entity sheep position="-5.2 0 -1.2" rotation="0 -30 0"></a-entity>
-    <a-entity sheep position="-3.4 0 .9" rotation="0 150 0"></a-entity>
-    <a-entity sheep position="-5 0 .2" rotation="0 80 0"></a-entity>
+    <a-entity sheep slot="src:models/sheep.glb;h:.7" position="-2.6 0 -.2" rotation="0 40 0"></a-entity>
+    <a-entity sheep slot="src:models/sheep.glb;h:.7" position="-5.2 0 -1.2" rotation="0 -30 0"></a-entity>
+    <a-entity sheep slot="src:models/sheep.glb;h:.7" position="-3.4 0 .9" rotation="0 150 0"></a-entity>
+    <a-entity sheep slot="src:models/sheep.glb;h:.7" position="-5 0 .2" rotation="0 80 0"></a-entity>
  
     <!-- Re Magi -->
     <a-entity pilgrim="from:6.4 0 .2;to:2.6 0 -1.7;speed:.4">
-      <a-entity person="robe:#8a2f57;mantle:#d7a52b;head:crown;hc:#f1e7d0;hair:#d9d9d9;beard:true;trim:true;gift:true;pose:hold;h:1.74"></a-entity></a-entity>
+      <a-entity person="robe:#8a2f57;mantle:#d7a52b;head:crown;hc:#f1e7d0;hair:#d9d9d9;beard:true;trim:true;gift:true;pose:hold;h:1.74" slot="src:models/king1.glb;h:1.74"></a-entity></a-entity>
     <a-entity pilgrim="from:7.8 0 .9;to:3.9 0 -1.1;speed:.38">
-      <a-entity person="robe:#1d7a76;mantle:#e8dfc8;head:crown;hc:#b02a2a;hair:#2a1c12;beard:true;trim:true;gift:true;pose:hold;skin:#d9a066;h:1.7"></a-entity></a-entity>
+      <a-entity person="robe:#1d7a76;mantle:#e8dfc8;head:crown;hc:#b02a2a;hair:#2a1c12;beard:true;trim:true;gift:true;pose:hold;skin:#d9a066;h:1.7" slot="src:models/king2.glb;h:1.7"></a-entity></a-entity>
     <a-entity pilgrim="from:9.2 0 1.6;to:5.2 0 -.5;speed:.36">
-      <a-entity person="robe:#c26a1d;mantle:#2d2f6b;head:crown;hc:#e8dfc8;hair:#14100c;beard:true;trim:true;gift:true;pose:hold;skin:#6b4429;h:1.78"></a-entity></a-entity>
+      <a-entity person="robe:#c26a1d;mantle:#2d2f6b;head:crown;hc:#e8dfc8;hair:#14100c;beard:true;trim:true;gift:true;pose:hold;skin:#6b4429;h:1.78" slot="src:models/king3.glb;h:1.78"></a-entity></a-entity>
+ 
+    <a-entity slot="src:models/camel.glb;h:2.3" position="8.6 0 2.4" rotation="0 -116 0"></a-entity>
+    <a-entity slot="src:models/camel.glb;h:2.2" position="10 0 3.6" rotation="0 -110 0"></a-entity>
  
     <!-- Stella cometa olografica -->
     <a-entity position="0 8 -3.2" animation="property:position;from:0 8 -3.2;to:0 8.6 -3.2;dir:alternate;loop:true;dur:3200;easing:easeInOutSine">
@@ -288,23 +400,19 @@ window.addEventListener('DOMContentLoaded',()=>document.getElementById('start').
     </a-entity>
     <a-cone radius-bottom="1.7" radius-top=".03" height="8" position="0 4 -3.2" material="shader:flat;color:#ffe9a8;opacity:.09;transparent:true;side:double;depthWrite:false" animation="property:material.opacity;from:.05;to:.14;dir:alternate;loop:true;dur:2000;easing:easeInOutSine"></a-cone>
  
-    <!-- Frammenti di codice in orbita -->
-    <a-entity position="0 4.4 -3.2" animation="property:rotation;to:0 360 0;loop:true;dur:70000;easing:linear">
-      <a-entity position="0 0 6" look-at="[camera]" text="value:git commit -m 'Natale';font:monoid;color:#4de8ff;align:center;width:4"></a-entity>
-      <a-entity position="5.7 .5 1.85" look-at="[camera]" text="value:while (true) love++;;font:monoid;color:#ffd27a;align:center;width:4"></a-entity>
-      <a-entity position="3.5 -.3 -4.85" look-at="[camera]" text="value:if (star) follow();;font:monoid;color:#4de8ff;align:center;width:4"></a-entity>
-      <a-entity position="-3.5 .4 -4.85" look-at="[camera]" text="value:return peace;;font:monoid;color:#ffd27a;align:center;width:4"></a-entity>
-      <a-entity position="-5.7 -.2 1.85" look-at="[camera]" text="value:sudo give --gifts;font:monoid;color:#4de8ff;align:center;width:4"></a-entity>
-    </a-entity>
+    <!-- Frasi in orbita -->
+    <a-entity position="0 4.4 -3.2" orbit-text animation="property:rotation;to:0 360 0;loop:true;dur:70000;easing:linear"></a-entity>
  
     <!-- Terminale -->
     <a-entity position="6.5 2.4 -5.5" look-at="[camera]">
       <a-plane width="4.5" height="2.3" position="0 0 -.01" material="shader:flat;color:#4de8ff;opacity:.7;transparent:true"></a-plane>
       <a-plane width="4.4" height="2.2" material="shader:flat;color:#02060f;opacity:.92;transparent:true"></a-plane>
-      <a-entity position="-2.05 .95 .01" typewriter="lines:$ git clone presepe.git|$ npm run natale|> star.follow() .... OK|> pastori.join()  re_magi.join()|> deploy Betlemme @ 00:00|[OK] Buon Natale!"
+      <a-entity position="-2.05 .95 .01" typewriter="lines:$ whoami|> Nicola Lombardi|$ git clone presepe.git|$ npm run natale|> star.follow() .... OK|> pastori.join()  re_magi.join()|[OK] Buon Natale da Nicola!"
         text="value:;font:monoid;color:#b8f6ff;align:left;anchor:left;baseline:top;width:4.1;wrapCount:40"></a-entity>
     </a-entity>
   </a-entity>
+ 
+  <a-entity id="creditsvr" position="0 .03 4.4" rotation="-90 0 0" text="value:Presepe.exe di Nicola Lombardi;font:monoid;color:#4de8ff;align:center;width:3"></a-entity>
  
   <!-- Giocatore -->
   <a-entity id="rig" position="0 0 6" thumbstick-move wasd-controls="acceleration:30">
