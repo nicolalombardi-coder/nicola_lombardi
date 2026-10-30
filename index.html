@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+!DOCTYPE html>
 <html lang="it">
 <head>
 <meta charset="utf-8">
-<title>Presepe.exe · VR + AR</title>
+<title>Presepe.exe · VR</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Presepe in realtà virtuale e aumentata: personaggi realistici, hologram e code rain.">
+<meta name="description" content="Presepe in realtà virtuale: personaggi realistici, hologram e code rain.">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
 <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
@@ -20,10 +20,6 @@
   .intro button{font:600 1rem "JetBrains Mono",monospace;padding:.95em 2.2em;border-radius:10px;border:1px solid var(--ciano);background:rgba(77,232,255,.1);color:var(--ciano);cursor:pointer;transition:background .25s,box-shadow .25s}
   .intro button:hover,.intro button:focus-visible{background:rgba(77,232,255,.25);box-shadow:0 0 28px rgba(77,232,255,.45);outline:none}
   .hint{position:fixed;left:16px;bottom:16px;z-index:5;font:400 .75rem/1.5 "JetBrains Mono",monospace;color:rgba(232,249,255,.65);max-width:36ch;pointer-events:none}
-  #arhud{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);width:min(92vw,420px);padding:14px 16px;border-radius:14px;background:rgba(5,6,15,.74);
-    backdrop-filter:blur(8px);color:#e8f9ff;font:400 .85rem/1.5 "JetBrains Mono",monospace;opacity:0;pointer-events:none;z-index:20}
-  body.ar #arhud{opacity:1;pointer-events:auto}
-  #arhud p{margin:0 0 .6rem}#arhud input{width:100%;accent-color:#4de8ff}
   @keyframes blink{50%{opacity:0}}
   @media (prefers-reduced-motion:reduce){.intro{transition:none}.intro code::after{animation:none}}
 </style>
@@ -166,8 +162,7 @@ AFRAME.registerComponent('coderain',{schema:{char:{default:'0'},color:{default:'
   this.mat=new T.PointsMaterial({map:new T.CanvasTexture(c),size:.45,transparent:true,opacity:.75,depthWrite:false,blending:T.AdditiveBlending});
   this.el.setObject3D('p',new T.Points(g,this.mat))},
 rs(i,r){this.p.set([(Math.random()-.5)*34,r?Math.random()*14:14,(Math.random()-.5)*34-3],i*3);this.v[i]=.6+Math.random()*1.4},
-tick(t,dt){const s=dt/1000;for(let i=0;i<this.v.length;i++){this.p[i*3+1]-=this.v[i]*s;if(this.p[i*3+1]<0)this.rs(i,false)}this.a.needsUpdate=true;
-  this.mat.size=.45*this.el.object3D.matrixWorld.getMaxScaleOnAxis()}});
+tick(t,dt){const s=dt/1000;for(let i=0;i<this.v.length;i++){this.p[i*3+1]-=this.v[i]*s;if(this.p[i*3+1]<0)this.rs(i,false)}this.a.needsUpdate=true;}});
  
 AFRAME.registerComponent('skyline',{init(){
   let s=5;const r=()=>(s=(s*16807)%2147483647)/2147483647;
@@ -205,21 +200,17 @@ window.addEventListener('DOMContentLoaded',()=>document.getElementById('start').
 </head>
 <body>
 <div class="intro" id="intro"><div>
-  <code>$ ./presepe --vr --ar</code>
+  <code>$ ./presepe --vr</code>
   <h1>Presepe.exe</h1>
-  <p>Una notte a Betlemme, scritta in codice. Entra con il visore, o portalo sul tuo tavolo in realtà aumentata.</p>
+  <p>Una notte a Betlemme, scritta in codice. Entra con il visore o dal browser.</p>
   <button id="start">avvia()</button>
 </div></div>
-<div class="hint">Pulsante VR o AR in basso a destra.<br>Computer: WASD e mouse.</div>
-<div id="arhud">
-  <p>Inquadra il pavimento o un tavolo e tocca per posizionare il presepe.</p>
-  <label>Dimensione<input id="size" type="range" min="0.03" max="0.3" step="0.005" value="0.07"></label>
-</div>
+<div class="hint">Visore: icona VR in basso a destra, muoviti con lo stick.<br>Computer: WASD e mouse.</div>
  
-<a-scene renderer="antialias:true" webxr="optionalFeatures:hit-test,local-floor,dom-overlay;overlayElement:#arhud"
+<a-scene renderer="antialias:true"
   fog="type:exponential;color:#05060f;density:.008" background="color:#05060f">
  
-  <!-- Mondo digitale: sparisce in AR -->
+  <!-- Mondo digitale -->
   <a-entity id="world">
     <a-entity starfield shooter></a-entity>
     <a-circle radius="130" rotation="-90 0 0" color="#070b1a" material="roughness:1"></a-circle>
@@ -229,9 +220,8 @@ window.addEventListener('DOMContentLoaded',()=>document.getElementById('start').
  
   <a-entity id="amb" light="type:ambient;color:#5a6cff;intensity:.55"></a-entity>
   <a-entity light="type:directional;color:#9fb4ff;intensity:.6" position="-20 30 -10"></a-entity>
-  <a-entity ar-hit-test="target:#presepe"></a-entity>
  
-  <!-- Presepe: in AR viene rimpicciolito e posizionato dove tocchi -->
+  <!-- Presepe -->
   <a-entity id="presepe">
     <a-entity coderain="char:0;color:#4de8ff"></a-entity>
     <a-entity coderain="char:1;color:#ffd27a;count:120"></a-entity>
@@ -325,29 +315,11 @@ window.addEventListener('DOMContentLoaded',()=>document.getElementById('start').
 </a-scene>
  
 <script>
-  const sc=document.querySelector('a-scene'),root=document.getElementById('presepe'),rig=document.getElementById('rig'),hud=document.getElementById('arhud');
-  let size=.07;
-  /* Griglia luminosa */
-  sc.addEventListener('loaded',()=>{const g=new THREE.GridHelper(260,130,0x4de8ff,0x0b3250);g.material.transparent=true;g.material.opacity=.35;g.position.y=.01;document.getElementById('grid').object3D.add(g)});
-  /* Passaggio VR <-> AR */
-  function mode(ar){
-    document.body.classList.toggle('ar',ar);
-    document.getElementById('world').object3D.visible=!ar;
-    sc.setAttribute('fog','density',ar?0:.008);
-    sc.setAttribute('background','transparent',ar);
-    document.getElementById('amb').setAttribute('light',ar?{color:'#ffffff',intensity:.95}:{color:'#5a6cff',intensity:.55});
-    root.querySelectorAll('[light]').forEach(l=>{ /* le luci puntiformi usano distanze reali: in scala ridotta vanno ammorbidite */
-      if(l.getAttribute('light').type!=='point')return;
-      l.dataset.d=l.dataset.d||l.getAttribute('light').distance;
-      l.setAttribute('light',{decay:ar?0:1.5,distance:ar?3:+l.dataset.d})});
-    root.object3D.scale.setScalar(ar?size:1);
-    root.object3D.position.set(0,0,ar?-1.1:0);
-    rig.object3D.position.set(0,0,ar?0:6);
-  }
-  sc.addEventListener('enter-vr',()=>mode(sc.is('ar-mode')));
-  sc.addEventListener('exit-vr',()=>mode(false));
-  document.getElementById('size').addEventListener('input',e=>{size=+e.target.value;if(sc.is('ar-mode'))root.object3D.scale.setScalar(size)});
-  hud.addEventListener('beforexrselect',e=>e.preventDefault());
+  /* Griglia luminosa sul pavimento */
+  document.querySelector('a-scene').addEventListener('loaded',()=>{
+    const g=new THREE.GridHelper(260,130,0x4de8ff,0x0b3250);g.material.transparent=true;g.material.opacity=.35;g.position.y=.01;
+    document.getElementById('grid').object3D.add(g);
+  });
 </script>
 </body>
 </html>
