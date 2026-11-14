@@ -260,10 +260,40 @@
     <!-- Pop-up YSL MYSLF L'Absolu Bottle that appears on page transitions to spray -->
     <div id="transition-bottle-overlay" aria-hidden="true">
         <div class="relative flex flex-col items-center p-2 rounded-2xl bg-black/50 backdrop-blur-md border border-white/25 shadow-[0_0_35px_rgba(255,255,255,0.2)]">
-            <img src="image_3b8576.png"
-                 onerror="this.onerror=null; this.src='https://www.yslbeautyus.com/dw/image/v2/AANG_PRD/on/demandware.static/-/Sites-ysl-master-catalog/default/dw4f7e5c5c/pdp/3614274285628_MYSLF_LE_PARFUM_60ML_ALT1.jpg';"
+            <img src="https://www.yslbeautyus.com/dw/image/v2/AANG_PRD/on/demandware.static/-/Sites-ysl-master-catalog/default/dw4f7e5c5c/pdp/3614274285628_MYSLF_LE_PARFUM_60ML_ALT1.jpg"
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
                  alt="YSL MYSLF L'Absolu"
                  class="w-16 h-28 sm:w-20 sm:h-36 object-contain rounded-lg drop-shadow-[0_0_12px_rgba(255,255,255,0.4)]">
+            <!-- High-precision Chrome SVG replica of YSL MYSLF L'Absolu as instant fallback -->
+            <svg style="display:none;" class="w-16 h-28 sm:w-20 sm:h-36" viewBox="0 0 90 170" fill="none">
+                <defs>
+                    <linearGradient id="yslChromeTrans" x1="0" y1="0" x2="90" y2="170" gradientUnits="userSpaceOnUse">
+                        <stop offset="0%" stop-color="#ffffff"/>
+                        <stop offset="25%" stop-color="#a1a1aa"/>
+                        <stop offset="50%" stop-color="#f4f4f5"/>
+                        <stop offset="75%" stop-color="#52525b"/>
+                        <stop offset="100%" stop-color="#e4e4e7"/>
+                    </linearGradient>
+                    <linearGradient id="yslCapTrans" x1="25" y1="5" x2="65" y2="38" gradientUnits="userSpaceOnUse">
+                        <stop offset="0%" stop-color="#e4e4e7"/>
+                        <stop offset="40%" stop-color="#18181b"/>
+                        <stop offset="75%" stop-color="#ffffff"/>
+                        <stop offset="100%" stop-color="#71717a"/>
+                    </linearGradient>
+                </defs>
+                <!-- Cap -->
+                <rect x="27" y="6" width="36" height="32" rx="2" fill="url(#yslCapTrans)" stroke="#d4d4d8" stroke-width="1"/>
+                <rect x="33" y="38" width="24" height="4" fill="#3f3f46"/>
+                <!-- Chrome Monolith Body -->
+                <rect x="18" y="42" width="54" height="122" rx="3" fill="url(#yslChromeTrans)" stroke="#27272a" stroke-width="1.5"/>
+                <!-- Interlocking YSL Cassandre Monogram -->
+                <g stroke="#18181b" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none">
+                    <path d="M35 66 L45 83 L55 66 M45 83 L45 106"/>
+                    <path d="M51 74 C42 71, 36 78, 45 86 C54 94, 48 102, 38 99"/>
+                    <path d="M40 72 L40 112 L53 112"/>
+                </g>
+                <text x="45" y="154" fill="#18181b" font-family="Montserrat" font-size="5.5" font-weight="600" letter-spacing="1" text-anchor="middle">L'ABSOLU</text>
+            </svg>
         </div>
     </div>
 
@@ -362,10 +392,53 @@
                     <p class="text-xs sm:text-sm text-gray-300 mb-3 italic tracking-wide font-light">“L'essenza di una notte indimenticabile sta per iniziare...”</p>
                     <button id="intro-bottle-btn" onclick="sprayFromIntroBottle(true)" class="group relative flex flex-col items-center p-3 rounded-2xl hover:bg-white/5 transition">
                         <div id="intro-bottle-wrapper" class="relative flex items-center justify-center transition-transform group-hover:scale-105">
-                            <img src="image_3b8576.png"
-                                 onerror="this.onerror=null; this.src='https://www.yslbeautyus.com/dw/image/v2/AANG_PRD/on/demandware.static/-/Sites-ysl-master-catalog/default/dw4f7e5c5c/pdp/3614274285628_MYSLF_LE_PARFUM_60ML_ALT1.jpg';"
+                            <img src="https://www.yslbeautyus.com/dw/image/v2/AANG_PRD/on/demandware.static/-/Sites-ysl-master-catalog/default/dw4f7e5c5c/pdp/3614274285628_MYSLF_LE_PARFUM_60ML_ALT1.jpg"
+                                 onerror="this.style.display='none'; document.getElementById('ysl-chrome-fallback').style.display='block';"
                                  alt="Yves Saint Laurent MYSLF L'Absolu"
-                                 class="w-28 h-36 sm:w-36 sm:h-44 object-contain rounded-xl drop-shadow-[0_0_18px_rgba(255,255,255,0.28)]">
+                                 class="w-24 h-36 sm:w-28 sm:h-44 object-contain rounded-xl drop-shadow-[0_0_18px_rgba(255,255,255,0.28)]">
+                            <!-- Chrome Metallic Flacon SVG matching the YSL MYSLF L'Absolu bottle in user's photo -->
+                            <svg id="ysl-chrome-fallback" style="display:none;" class="w-24 h-36 sm:w-28 sm:h-44 drop-shadow-[0_0_18px_rgba(255,255,255,0.3)]" viewBox="0 0 110 190" fill="none">
+                                <defs>
+                                    <linearGradient id="yslBodyChrome" x1="20" y1="45" x2="90" y2="180" gradientUnits="userSpaceOnUse">
+                                        <stop offset="0%" stop-color="#ffffff"/>
+                                        <stop offset="22%" stop-color="#a1a1aa"/>
+                                        <stop offset="48%" stop-color="#f8fafc"/>
+                                        <stop offset="72%" stop-color="#52525b"/>
+                                        <stop offset="100%" stop-color="#e4e4e7"/>
+                                    </linearGradient>
+                                    <linearGradient id="yslCapChrome" x1="33" y1="8" x2="77" y2="42" gradientUnits="userSpaceOnUse">
+                                        <stop offset="0%" stop-color="#f4f4f5"/>
+                                        <stop offset="35%" stop-color="#09090b"/>
+                                        <stop offset="70%" stop-color="#ffffff"/>
+                                        <stop offset="100%" stop-color="#71717a"/>
+                                    </linearGradient>
+                                </defs>
+                                <!-- Mirror Cap -->
+                                <rect x="34" y="8" width="42" height="34" rx="2" fill="url(#yslCapChrome)" stroke="#e4e4e7" stroke-width="1.2"/>
+                                <!-- Nozzle Collar -->
+                                <rect x="41" y="42" width="28" height="5" fill="#27272a"/>
+                                <!-- Rectangular Silver Mirror Bottle -->
+                                <rect x="22" y="47" width="66" height="135" rx="3" fill="url(#yslBodyChrome)" stroke="#18181b" stroke-width="2"/>
+                                <!-- Inner Bevel Highlight -->
+                                <rect x="25" y="50" width="60" height="129" rx="2" stroke="rgba(255,255,255,0.75)" stroke-width="1"/>
+                                <!-- Iconic Embossed YSL Vertical Logo -->
+                                <g stroke="#18181b" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" fill="none">
+                                    <!-- Y -->
+                                    <path d="M43 74 L55 93 L67 74"/>
+                                    <path d="M55 93 L55 119"/>
+                                    <!-- S -->
+                                    <path d="M63 83 C52 79, 44 88, 55 97 C66 106, 58 116, 46 112"/>
+                                    <!-- L -->
+                                    <path d="M49 80 L49 126 L65 126"/>
+                                </g>
+                                <!-- Metallic Highlight on YSL Logo -->
+                                <g stroke="rgba(255,255,255,0.7)" stroke-width="1" stroke-linecap="round" fill="none">
+                                    <path d="M44 74 L55 92 L66 74"/>
+                                    <path d="M50 80 L50 125 L64 125"/>
+                                </g>
+                                <!-- Bottom L'ABSOLU Text -->
+                                <text x="55" y="171" fill="#18181b" font-family="Montserrat" font-size="6.5" font-weight="600" letter-spacing="1.2" text-anchor="middle">L'ABSOLU</text>
+                            </svg>
                         </div>
                         <span class="text-[11px] uppercase tracking-widest text-gray-300 group-hover:text-white mt-2 font-medium">YSL MYSLF L'Absolu</span>
                     </button>
@@ -611,12 +684,12 @@
                             <circle cx="165" cy="256" r="1.4" opacity="1"/><circle cx="176" cy="248" r="1.4" opacity="1"/>
                             <circle cx="195" cy="196" r="1.1" opacity="0.8"/><circle cx="204" cy="205" r="1.2" opacity="0.9"/>
                             <circle cx="197" cy="218" r="1.3" opacity="0.95"/><circle cx="207" cy="228" r="1.2" opacity="0.9"/>
-                <!-- Tuxedo with Rhinestone Gradient Photo -->
-                <div class="relative max-w-[240px] sm:max-w-[270px] mx-auto mb-6 p-2.5 rounded-2xl bg-gradient-to-b from-white/15 to-black/85 border border-white/30 shadow-[0_0_30px_rgba(255,255,255,0.18)]">
-                    <img src="image_2cf8bf.png"
-                         onerror="this.onerror=null; this.src='https://placehold.co/400x460/111115/e4e4e7?text=Smoking+Swarovski';"
-                         alt="Smoking Nero con Strass Argento"
-                         class="w-full h-auto rounded-xl object-contain">
+                            <circle cx="199" cy="242" r="1.4" opacity="1"/><circle cx="209" cy="248" r="1.3" opacity="0.95"/>
+                        </g>
+                        <!-- Stand Pole -->
+                        <rect x="125" y="270" width="10" height="25" fill="#71717a"/>
+                        <rect x="95" y="292" width="70" height="5" rx="2" fill="#27272a"/>
+                    </svg>
                 </div>
 
                 <!-- Confirmation Deadline & Allergies Notice Box -->
